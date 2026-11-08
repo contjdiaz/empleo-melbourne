@@ -15,3 +15,7 @@ workspace/entregas/*.md
 !workspace/entregas/.gitkeep
 workspace/datos/visto.json
 
+
+# Managed Agents test outputs (transcripts)
+tests/out/
+.vercel

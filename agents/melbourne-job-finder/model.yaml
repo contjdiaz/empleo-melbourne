@@ -1,0 +1,5 @@
+name: melbourne-job-finder
+description: "Chat assistant that searches real job ads in Melbourne (SEEK, LinkedIn, Victorian Government Careers) for one job seeker and explains which ones fit her profile."
+model:
+  id: claude-sonnet-5-5   # good judgement for filtering and plain explanations
+  effort: low             # one script call per request; low keeps 3-5 questions under USD 1.20

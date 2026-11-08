@@ -1,104 +1,59 @@
-# Melbourne Empleo · frontend
+# Melbourne Jobs · web
 
-Interfaz para que una persona no técnica use el buscador de empleo sin tocar la
-terminal: completa su perfil, busca ofertas reales de SEEK y abre cada aviso.
-
-Sin frameworks. HTML + CSS + JavaScript, ~60 kB en total (incluida la demo).
-Se despliega en Vercel tal cual, sin build.
-
-## Estructura
+La interfaz que usa tu hermana. En inglés por defecto, con botón EN/ES. Sin frameworks ni build:
+HTML + CSS + JS y cuatro funciones de Vercel.
 
 ```text
-web/
-├── index.html              la interfaz
-├── assets/
-│   ├── styles.css          estilos (~13 kB)
-│   ├── app.js              lógica (~11 kB)
-│   ├── config.js           URL del agente local (vacío en Vercel)
-│   └── demo-data.js        60 ofertas reales para el modo demostración
-├── api/
-│   └── buscar.js           función serverless de Vercel
-├── data/
-│   └── demo-ofertas.json   datos completos de la demo
-└── vercel.json
+navegador ──► /api/chat    crea la Session del agente (tope USD 1,20) o envía una pregunta
+          ──► /api/events  polling cada ~2 s: progreso, respuesta, estado y costo
+          ──► /api/search  búsqueda rápida en SEEK, gratis, sin modelo
+          ──► /api/health  ¿está configurado el chat? ¿el código es correcto?
+                 │
+                 └─ ANTHROPIC_API_KEY vive solo en Vercel; nunca llega al navegador
 ```
 
 ## Desplegar en Vercel
 
-### Opción A · desde la web (sin terminal)
+1. **Add New → Project → Import** el repositorio de GitHub.
+2. **Root Directory:** `web` (o `buscador-empleo-melbourne/web` si el repo tiene la carpeta padre).
+   Framework Preset: **Other**. Build y Output: vacíos.
+3. **Settings → Environment Variables** (Production):
 
-1. Sube esta carpeta a un repositorio de GitHub.
-2. En Vercel: **Add New → Project → Import** el repositorio.
-3. En **Root Directory** elige `buscador-empleo-melbourne/web`.
-4. Framework Preset: **Other**. Build Command: vacío. Output Directory: vacío.
-5. **Deploy**.
+| Variable | Valor |
+|---|---|
+| `ANTHROPIC_API_KEY` | una API key del workspace **"Prueba agentes"** (Console → API keys) |
+| `AGENT_ID` | `agent_014bRzh9MwpUJM4C8pQbM1Ga` |
+| `ENVIRONMENT_ID` | `env_01A7LShbxWTmD6oCJBgQR5o7` |
+| `MEMORY_STORE_ID` | `memstore_01UvN1DoyRzLMDe1FmzjjEHa` |
+| `ACCESS_CODE` | el código que le darás a tu hermana (largo, sin espacios) |
+| `SESSION_BUDGET_CENTS` | opcional; `120` = USD 1,20 por conversación |
 
-### Opción B · desde la terminal
+4. **Deploy** (o Redeploy después de cambiar variables).
 
-```bash
-cd buscador-empleo-melbourne/web
-npx vercel
+Sin `ANTHROPIC_API_KEY` o sin `ACCESS_CODE`, el chat se apaga solo y la búsqueda rápida sigue
+funcionando.
+
+## Probar en tu máquina (sin API key)
+
+```sh
+# terminal 1: proxy local que usa tu login de `ant` (el token no sale del proceso)
+uv run --script scripts/dev-proxy.py
+# terminal 2: el mismo código de Vercel, servido localmente
+ACCESS_CODE=local-test AGENT_ID=agent_... ENVIRONMENT_ID=env_... MEMORY_STORE_ID=memstore_... \
+ANTHROPIC_API_KEY=local-proxy ANTHROPIC_BASE_URL=http://127.0.0.1:8788 node scripts/dev-web.js
+# abre http://127.0.0.1:3000 y usa el código local-test
 ```
 
-En producción, sin variables de entorno, funciona en **modo demostración** con
-las 60 ofertas reales incluidas.
+## Seguridad y costos
 
-## Conectar el agente real
-
-El agente corre en tu máquina (necesita `ant` y el SDK de Python). Vercel solo
-aloja la interfaz y hace de puente.
-
-```bash
-# terminal 1
-uv run python servidor/api.py
-
-# terminal 2: expón el puerto con un túnel
-npx localtunnel --port 8787
-# o: cloudflared tunnel --url http://127.0.0.1:8787
-```
-
-En Vercel: **Settings → Environment Variables**
-
-```text
-AGENT_API_URL = https://tu-tunel.loca.lt
-```
-
-Vuelve a desplegar. Ahora `POST /api/buscar` reenvía al agente y devuelve datos
-en vivo, y aparece el botón **«Pedir informe al agente (IA)»**.
-
-### Sin Vercel ni túnel
-
-Abre `web/assets/config.js` y pon:
-
-```js
-window.CONFIG = { API_LOCAL: "http://127.0.0.1:8787" };
-```
-
-Sirve la carpeta con cualquier servidor estático:
-
-```bash
-cd buscador-empleo-melbourne/web
-python -m http.server 5500
-```
-
-## Modos
-
-| Modo | Cuándo | Qué hace |
-|---|---|---|
-| `demo` | Sin `AGENT_API_URL` ni servidor local | Filtra las 60 ofertas reales incluidas |
-| `local` | Con `AGENT_API_URL` o `API_LOCAL` | Consulta SEEK en vivo desde tu máquina |
-| `ia` | Botón de informe con servidor local | Ejecuta `agente.py` y muestra el informe |
-
-## Privacidad
-
-El perfil se guarda **solo en `localStorage`** del navegador. No viaja a ningún
-servidor salvo el `perfil` que se envía con cada búsqueda al agente local, para
-que sepa qué datos faltan.
+- Cada conversación tiene un tope duro de USD 1,20: al llegar, la Session se detiene
+  (`budget_reached`) y la web ofrece un chat nuevo.
+- Sin el código de acceso no se crea ninguna Session (respuesta 401, costo USD 0).
+- Pon además un límite de gasto mensual al workspace en Console → Limits.
+- El perfil vive en `localStorage`; viaja al agente solo en el primer mensaje de cada chat.
 
 ## La dedicatoria
 
-El pie de página lleva la nota que pediste:
+El pie de página conserva la nota en español:
 
 > Con mucho amor de **Jimy Díaz** para su hermana 💖 💕 💗 ❤️ 💓 💞 💘 💝
-
-Está en `index.html`, bloque `<footer class="pie">`.

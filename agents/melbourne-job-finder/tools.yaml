@@ -1,0 +1,13 @@
+tools:
+  - type: agent_toolset_20260401
+    default_config: {enabled: true, permission_policy: {type: auto}}
+    configs:
+      # Reads never change anything: run them without a check.
+      - {name: read, permission_policy: {type: always_allow}}
+      - {name: glob, permission_policy: {type: always_allow}}
+      - {name: grep, permission_policy: {type: always_allow}}
+      # Opens one job ad when she asks for details. The environment limits it to the job sites.
+      - {name: web_fetch, permission_policy: {type: always_allow}}
+      # Off: the sources are in the skill script, and open search results could carry instructions.
+      - {name: web_search, enabled: false}
+      # bash, write, edit stay on auto: the server judges each call.

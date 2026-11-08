@@ -1,0 +1,2 @@
+name: job-finder-memory
+description: "seen.json: URLs of the job ads already shown to the user, with the date. The search script reads it to mark jobs new or seen, and its remember command adds to it. No profile data."

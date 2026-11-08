@@ -1,0 +1,8 @@
+{
+ "agent": "melbourne-job-finder",
+ "title": "test melbourne-job-finder: first search",
+ "budget_usd": 1.2,
+ "vault_ids": [],
+ "resources": [{"path": "./agents/melbourne-job-finder/memory_store-memoria.yaml", "access": "read_write"}],
+ "events": [{"type": "user.message", "content": [{"type": "text", "text": "Reply language: English\n\nRequest: Find full-time jobs in admin, reception or customer service.\n\nProfile (from the profile form):\n- visa: not set\n- right to work: not set\n- hours available per week: 38\n- availability: Monday to Friday\n- certifications: First Aid\n- English level: intermediate\n- experience: customer service, 3 years; administration, 1 year\n- minimum pay: not set\n- max travel (minutes): 60"}]}]
+}

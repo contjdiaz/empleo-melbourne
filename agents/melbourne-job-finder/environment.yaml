@@ -1,0 +1,13 @@
+name: melbourne-job-finder-env
+config:
+  type: cloud
+  networking:
+    type: limited
+    allow_mcp_servers: false
+    allow_package_managers: false      # search.py uses only the standard library
+    allowed_hosts:
+      - au.seek.com                    # SEEK search API
+      - www.seek.com.au                # SEEK job pages (details)
+      - www.linkedin.com               # LinkedIn guest job search and job pages
+      - www.careers.vic.gov.au         # Victorian Government Careers (careers.vic.gov.au redirects here)
+      - www.fairwork.gov.au            # minimum pay guides

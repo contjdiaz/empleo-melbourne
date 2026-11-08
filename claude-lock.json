@@ -1,0 +1,38 @@
+{
+  "version": 1,
+  "origin": {
+    "base_url": "https://api.anthropic.com",
+    "organization_id": "18c9eecb-a718-4481-b1b6-77259cdd66aa",
+    "workspace_id": "wrkspc_01D7ce2ftZTJRfyyq4RNRmFn"
+  },
+  "resources": {
+    "./agents/melbourne-job-finder/agent.md": {
+      "kind": "agent",
+      "id": "agent_014bRzh9MwpUJM4C8pQbM1Ga",
+      "version": "3",
+      "hash": "dd996cb30883e5e86d6ea139231c06a1",
+      "remote_hash": "b74bab3f6ff560b6023df5f01c36ab57",
+      "stamp": "3"
+    },
+    "./agents/melbourne-job-finder/environment.yaml": {
+      "kind": "environment",
+      "id": "env_01A7LShbxWTmD6oCJBgQR5o7",
+      "hash": "1f8378b7f18d8b01ee45067f3ca8e2a4",
+      "remote_hash": "46c4aee81eb3783ae1de0d77803bbcef",
+      "stamp": "2026-11-08T03:01:14.555414Z"
+    },
+    "./agents/melbourne-job-finder/memory_store-memoria.yaml": {
+      "kind": "memory_store",
+      "id": "memstore_01UvN1DoyRzLMDe1FmzjjEHa",
+      "hash": "4797cd8b1d8979b6f41467da4825b80d",
+      "remote_hash": "4797cd8b1d8979b6f41467da4825b80d",
+      "stamp": "2026-11-08T02:55:37.761412Z"
+    },
+    "./skills/melbourne-job-search": {
+      "kind": "skill",
+      "id": "skill_01PdyjD6J5WctYHKGWKcEUAn",
+      "version": "skver_01NxpVu6zB7fe1z1fPTyQKeE",
+      "hash": "3425ad15c9d5ce76b1dc47776d0d0f26"
+    }
+  }
+}

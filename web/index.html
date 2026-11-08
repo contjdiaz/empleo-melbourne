@@ -1,18 +1,16 @@
 <!doctype html>
-<html lang="es">
+<html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Melbourne Empleo · trabajo estable para mi hermana</title>
-    <meta
-      name="description"
-      content="Buscador de empleo en Melbourne: jornada completa, sin limpieza y con los datos que faltan marcados para completar."
-    />
-    <meta name="theme-color" content="#fff8f5" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Melbourne Jobs · your job search assistant</title>
+    <meta name="description" content="Find stable, full-time work in Melbourne. Ask an AI assistant that searches SEEK, LinkedIn and Victorian Government Careers for you." />
+    <meta name="theme-color" content="#fff9f6" />
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💖</text></svg>" />
     <link rel="stylesheet" href="./assets/styles.css" />
   </head>
   <body>
+    <a class="skip" href="#assistant" data-i18n="skip">Skip to the assistant</a>
     <div class="aura" aria-hidden="true">
       <span class="blob blob-1"></span>
       <span class="blob blob-2"></span>
@@ -20,221 +18,205 @@
     </div>
 
     <header class="topbar">
-      <a class="brand" href="#inicio" aria-label="Melbourne Empleo, inicio">
+      <a class="brand" href="#top" aria-label="Melbourne Jobs">
         <span class="brand-mark" aria-hidden="true">♥</span>
-        <span class="brand-name">Melbourne <b>Empleo</b></span>
+        <span class="brand-name">Melbourne <b>Jobs</b></span>
       </a>
-      <nav class="nav" aria-label="Secciones">
-        <a href="#buscar">Buscar</a>
-        <a href="#como">Cómo funciona</a>
-        <button class="btn btn-ghost" id="abrir-perfil" type="button">
-          Mi perfil <span class="punto" id="perfil-punto" hidden></span>
-        </button>
+      <nav class="nav" aria-label="Sections">
+        <a href="#assistant" data-i18n="nav.assistant">Assistant</a>
+        <a href="#quick" data-i18n="nav.quick">Quick search</a>
+        <a href="#saved"><span data-i18n="nav.saved">Saved</span> <span class="count" id="saved-count" hidden></span></a>
       </nav>
+      <div class="top-actions">
+        <button class="btn btn-ghost btn-sm" id="open-profile" type="button">
+          <span data-i18n="nav.profile">My profile</span> <span class="dot" id="profile-dot" hidden></span>
+        </button>
+        <div class="lang" role="group" aria-label="Language">
+          <button type="button" data-lang="en" aria-pressed="true">EN</button>
+          <button type="button" data-lang="es" aria-pressed="false">ES</button>
+        </div>
+      </div>
     </header>
 
-    <main id="inicio">
+    <main id="top">
       <section class="hero">
-        <p class="eyebrow"><span class="latido">♥</span> Hecho para una colombiana en Melbourne</p>
-        <h1>
-          Trabajo estable,
-          <em>con las horas que necesitas.</em>
-        </h1>
-        <p class="lead">
-          Busca en SEEK, descarta la limpieza y prioriza la jornada completa.
-          No inventa ofertas, salarios ni visas: si un dato falta, te dice
-          exactamente cuál completar.
-        </p>
-
-        <div class="hero-datos" id="hero-datos">
-          <div class="dato"><span id="dato-visa">Visa por completar</span><small>derecho a trabajar</small></div>
-          <div class="dato"><span id="dato-horas">Horas por definir</span><small>disponibilidad semanal</small></div>
-          <div class="dato"><span id="dato-zona">Melbourne</span><small>y alrededores</small></div>
+        <p class="eyebrow"><span class="beat">♥</span> <span data-i18n="hero.eyebrow">Made for a Colombian woman in Melbourne</span></p>
+        <h1><span data-i18n="hero.title1">Stable work,</span> <em data-i18n="hero.title2">with the hours you need.</em></h1>
+        <p class="lead" data-i18n="hero.lead">Tell the assistant what job you want. It searches SEEK, LinkedIn and Victorian Government Careers, skips cleaning jobs, and explains which jobs fit you. It never invents a job or applies for you.</p>
+        <div class="facts" id="facts">
+          <button type="button" class="fact" data-open-profile><span id="fact-visa"></span><small data-i18n="hero.factVisa">right to work</small></button>
+          <button type="button" class="fact" data-open-profile><span id="fact-hours"></span><small data-i18n="hero.factHours">hours per week</small></button>
+          <button type="button" class="fact" data-open-profile><span id="fact-area"></span><small data-i18n="hero.factArea">where</small></button>
         </div>
       </section>
 
-      <section class="panel" id="buscar">
-        <form class="buscador" id="form-buscar" autocomplete="off">
-          <label class="etiqueta" for="q">¿Qué tipo de trabajo buscas?</label>
-          <div class="fila-busqueda">
-            <div class="campo">
-              <span class="campo-icono" aria-hidden="true">⌕</span>
-              <input
-                id="q"
-                name="q"
-                type="search"
-                placeholder="customer service, warehouse, administración…"
-                aria-describedby="ayuda-q"
-              />
-            </div>
-            <label class="select-wrap">
-              <span class="sr-only">Jornada</span>
-              <select id="jornada" name="jornada">
-                <option value="fulltime">Jornada completa</option>
-                <option value="parttime">Medio tiempo</option>
-                <option value="casual">Casual</option>
-                <option value="contract">Contrato temporal</option>
-                <option value="cualquiera">Cualquiera</option>
-              </select>
-            </label>
-            <button class="btn btn-primary" type="submit" id="btn-buscar">
-              <span>Buscar ofertas</span>
-              <span class="flecha" aria-hidden="true">→</span>
-            </button>
+      <!-- ── The AI assistant ─────────────────────────────────────── -->
+      <section class="panel chat" id="assistant" aria-labelledby="chat-title">
+        <header class="chat-head">
+          <div>
+            <h2 id="chat-title" data-i18n="chat.title">Ask your job assistant</h2>
+            <p class="muted" data-i18n="chat.subtitle">Write like you talk. You can ask follow-up questions in the same chat.</p>
           </div>
-          <p class="ayuda" id="ayuda-q">
-            Solo portales oficiales. Las ofertas de limpieza se excluyen
-            automáticamente.
-          </p>
+          <button class="btn btn-ghost btn-sm" type="button" id="new-chat" hidden data-i18n="chat.new">New chat</button>
+        </header>
 
-          <div class="chips" role="group" aria-label="Búsquedas sugeridas">
-            <button type="button" class="chip" data-q="customer service">customer service</button>
-            <button type="button" class="chip" data-q="warehouse">warehouse</button>
-            <button type="button" class="chip" data-q="administration">administración</button>
-            <button type="button" class="chip" data-q="retail">retail</button>
-            <button type="button" class="chip" data-q="receptionist">recepción</button>
+        <div class="notice warn" id="profile-notice" hidden>
+          <span id="profile-notice-text"></span>
+          <button class="btn btn-mini" type="button" data-open-profile data-i18n="profile.complete">Complete profile</button>
+        </div>
+
+        <div class="unlock" id="unlock" hidden>
+          <form id="unlock-form" class="unlock-form" autocomplete="off">
+            <label for="access-code" data-i18n="unlock.label">Enter your access code to use the assistant</label>
+            <div class="row">
+              <input id="access-code" type="password" inputmode="text" autocomplete="current-password" required />
+              <button class="btn btn-primary" type="submit" data-i18n="unlock.button">Unlock</button>
+            </div>
+            <p class="muted small" id="unlock-help" data-i18n="unlock.help">Jimy gave you this code. You type it only once on this device.</p>
+          </form>
+        </div>
+
+        <div class="notice" id="ai-off" hidden data-i18n="chat.off">The assistant is not set up yet. You can still use the free quick search below.</div>
+
+        <div class="messages" id="messages" aria-live="polite">
+          <div class="empty-chat" id="empty-chat">
+            <p class="muted" data-i18n="chat.try">Try one of these:</p>
+            <div class="suggestions" id="suggestions"></div>
           </div>
+        </div>
+
+        <form class="composer" id="composer" autocomplete="off">
+          <label class="sr-only" for="prompt" data-i18n="chat.label">Message to the assistant</label>
+          <textarea id="prompt" rows="1" maxlength="2000" data-i18n-placeholder="chat.placeholder" placeholder="e.g. Full-time admin jobs near Footscray"></textarea>
+          <button class="btn btn-primary send" type="submit" id="send" aria-label="Send">
+            <span data-i18n="chat.send">Send</span> <span aria-hidden="true">→</span>
+          </button>
         </form>
 
-        <div class="aviso" id="aviso-perfil" hidden>
-          <div>
-            <strong>Tu perfil está incompleto.</strong>
-            <span id="aviso-texto">Faltan datos de visa y horas.</span>
+        <footer class="chat-foot">
+          <div class="meter" id="meter" hidden>
+            <span class="meter-bar"><span id="meter-fill"></span></span>
+            <span id="meter-text"></span>
           </div>
-          <button class="btn btn-mini" type="button" data-abrir-perfil>Completar ahora</button>
-        </div>
-
-        <div class="resumen" id="meta" aria-live="polite"></div>
-        <div class="grid" id="ofertas"></div>
-
-        <div class="vacio" id="vacio" hidden>
-          <p class="vacio-emoji" aria-hidden="true">🌱</p>
-          <h3>Sin resultados para esa búsqueda</h3>
-          <p>Prueba con otra palabra o cambia la jornada. También puedes limpiar el campo para ver todo.</p>
-        </div>
-
-        <div class="estado" id="estado" hidden>
-          <span class="spinner" aria-hidden="true"></span>
-          <span id="estado-texto">Buscando ofertas…</span>
-        </div>
-
-        <div class="informe" id="informe" hidden>
-          <div class="informe-cabecera">
-            <h3>Informe del agente</h3>
-            <button class="btn btn-mini" type="button" id="cerrar-informe">Cerrar</button>
-          </div>
-          <div class="informe-cuerpo" id="informe-cuerpo"></div>
-        </div>
+          <p class="muted small" data-i18n="chat.privacy">Your profile stays in this browser. It goes to the assistant only with your first message of each chat.</p>
+        </footer>
       </section>
 
-      <section class="como" id="como">
-        <h2>Cómo funciona</h2>
-        <div class="pasos">
-          <article class="paso">
-            <span class="paso-num">1</span>
-            <h3>Completa tu perfil</h3>
-            <p>Visa, horas disponibles y certificaciones. Sin esos datos, el agente no descarta nada: solo te avisa.</p>
+      <!-- ── Quick search (free, no AI) ─────────────────────────── -->
+      <section class="panel" id="quick" aria-labelledby="quick-title">
+        <header class="section-head">
+          <h2 id="quick-title"><span data-i18n="quick.title">Quick search</span> <span class="pill mint" data-i18n="quick.free">free · no AI</span></h2>
+          <p class="muted" data-i18n="quick.subtitle">Live results from SEEK in a few seconds. Cleaning jobs are removed.</p>
+        </header>
+        <form class="search" id="search-form" autocomplete="off">
+          <div class="field">
+            <span class="field-icon" aria-hidden="true">⌕</span>
+            <label class="sr-only" for="q" data-i18n="quick.label">Job title or keywords</label>
+            <input id="q" type="search" data-i18n-placeholder="quick.placeholder" placeholder="customer service, warehouse, admin…" />
+          </div>
+          <label class="select">
+            <span class="sr-only" data-i18n="quick.type">Work type</span>
+            <select id="type">
+              <option value="fulltime" data-i18n="type.fulltime">Full time</option>
+              <option value="parttime" data-i18n="type.parttime">Part time</option>
+              <option value="casual" data-i18n="type.casual">Casual</option>
+              <option value="contract" data-i18n="type.contract">Contract / temp</option>
+              <option value="any" data-i18n="type.any">Any</option>
+            </select>
+          </label>
+          <button class="btn btn-primary" type="submit" id="search-btn" data-i18n="quick.button">Search</button>
+        </form>
+        <div class="chips" id="quick-chips"></div>
+        <div class="summary" id="quick-summary" aria-live="polite"></div>
+        <div class="grid" id="quick-results"></div>
+      </section>
+
+      <!-- ── Saved jobs ─────────────────────────────────────────── -->
+      <section class="panel" id="saved" aria-labelledby="saved-title">
+        <header class="section-head">
+          <h2 id="saved-title" data-i18n="saved.title">Saved jobs</h2>
+          <p class="muted" data-i18n="saved.subtitle">Tap ♡ on any job to keep it here. Saved in this browser only.</p>
+        </header>
+        <div class="grid" id="saved-list"></div>
+        <p class="muted" id="saved-empty" data-i18n="saved.empty">No saved jobs yet.</p>
+      </section>
+
+      <section class="how" aria-labelledby="how-title">
+        <h2 id="how-title" data-i18n="how.title">How it works</h2>
+        <div class="steps">
+          <article class="step">
+            <span class="step-num">1</span>
+            <h3 data-i18n="how.s1t">Complete your profile</h3>
+            <p data-i18n="how.s1">Visa, hours, experience. If something is missing, the assistant does not guess: it tells you what to check.</p>
           </article>
-          <article class="paso">
-            <span class="paso-num">2</span>
-            <h3>Busca en SEEK</h3>
-            <p>Consulta real al portal, con filtro de jornada completa y exclusión de limpieza aplicada en código.</p>
+          <article class="step">
+            <span class="step-num">2</span>
+            <h3 data-i18n="how.s2t">Ask the assistant</h3>
+            <p data-i18n="how.s2">It searches three job sites in the cloud, removes cleaning jobs, and marks the jobs you have not seen as NEW.</p>
           </article>
-          <article class="paso">
-            <span class="paso-num">3</span>
-            <h3>Revisa y postula</h3>
-            <p>Cada tarjeta enlaza a la oferta original. El agente nunca postula, ni envía mensajes, ni crea cuentas.</p>
+          <article class="step">
+            <span class="step-num">3</span>
+            <h3 data-i18n="how.s3t">Apply yourself</h3>
+            <p data-i18n="how.s3">Every card links to the real job ad. The assistant never applies, sends messages, or creates accounts.</p>
           </article>
         </div>
       </section>
     </main>
 
-    <footer class="pie">
-      <div class="amor" aria-label="Dedicatoria">
-        <p class="corazones" aria-hidden="true">💖 💕 💗 ❤️ 💓 💞 💘 💝</p>
-        <p class="amor-texto">
-          Con mucho amor de <strong>Jimy Díaz</strong> para su hermana
-        </p>
-        <p class="corazones corazones-2" aria-hidden="true">💗 💖 💞 💓 ❤️ 💕 💝 💘</p>
+    <footer class="foot">
+      <div class="love" aria-label="Dedicatoria">
+        <p class="hearts" aria-hidden="true">💖 💕 💗 ❤️ 💓 💞 💘 💝</p>
+        <p class="love-text">Con mucho amor de <strong>Jimy Díaz</strong> para su hermana</p>
+        <p class="hearts hearts-2" aria-hidden="true">💗 💖 💞 💓 ❤️ 💕 💝 💘</p>
       </div>
-      <div class="pie-meta">
-        <span>Melbourne Empleo · 2026</span>
-        <span class="punto-sep" aria-hidden="true">·</span>
-        <span>Datos de SEEK Australia</span>
-        <span class="punto-sep" aria-hidden="true">·</span>
-        <span id="pie-modo">Modo demostración</span>
+      <div class="foot-meta">
+        <span>Melbourne Jobs · 2026</span>
+        <span aria-hidden="true">·</span>
+        <span data-i18n="foot.sources">SEEK · LinkedIn · Victorian Government Careers</span>
       </div>
     </footer>
 
-    <dialog class="dialogo" id="dialogo-perfil" aria-labelledby="titulo-perfil">
-      <form method="dialog" class="dialogo-form" id="form-perfil">
-        <header class="dialogo-cabecera">
+    <dialog class="dialog" id="profile-dialog" aria-labelledby="profile-title">
+      <form method="dialog" class="dialog-form" id="profile-form">
+        <header class="dialog-head">
           <div>
-            <h2 id="titulo-perfil">Mi perfil</h2>
-            <p>Se guarda solo en este navegador. Nada se envía a ningún servidor.</p>
+            <h2 id="profile-title" data-i18n="profile.title">My profile</h2>
+            <p class="muted" data-i18n="profile.subtitle">Saved only in this browser. The assistant uses it to choose and explain jobs.</p>
           </div>
-          <button class="cerrar" type="button" id="cerrar-perfil" aria-label="Cerrar">×</button>
+          <button class="close" type="button" id="close-profile" aria-label="Close">×</button>
         </header>
-
-        <div class="campos">
-          <label class="campo-form">
-            <span>Visa</span>
-            <input name="visa" placeholder="Student visa (subclass 500)" />
-          </label>
-          <label class="campo-form">
-            <span>Derecho a trabajar</span>
-            <input name="derecho_a_trabajar" placeholder="24 h/semana durante el curso" />
-          </label>
-          <label class="campo-form">
-            <span>Horas disponibles por semana</span>
-            <input name="horas_disponibles" inputmode="numeric" placeholder="38" />
-          </label>
-          <label class="campo-form">
-            <span>Disponibilidad</span>
-            <input name="disponibilidad" placeholder="lunes a viernes, mañana y tarde" />
-          </label>
-          <label class="campo-form">
-            <span>Certificaciones</span>
-            <input name="certificaciones" placeholder="RSA, First Aid, White Card…" />
-          </label>
-          <label class="campo-form">
-            <span>Nivel de inglés</span>
+        <div class="fields">
+          <label class="f"><span data-i18n="profile.visa">Visa</span><input name="visa" data-i18n-placeholder="profile.visaPh" placeholder="Student visa (subclass 500)" /></label>
+          <label class="f"><span data-i18n="profile.right">Right to work</span><input name="derecho_a_trabajar" data-i18n-placeholder="profile.rightPh" placeholder="48 h per fortnight during the course" /></label>
+          <label class="f"><span data-i18n="profile.hours">Hours available per week</span><input name="horas_disponibles" inputmode="numeric" placeholder="38" /></label>
+          <label class="f"><span data-i18n="profile.availability">Availability</span><input name="disponibilidad" data-i18n-placeholder="profile.availabilityPh" placeholder="Mon–Fri, mornings and afternoons" /></label>
+          <label class="f"><span data-i18n="profile.area">Suburb or area</span><input name="zona" data-i18n-placeholder="profile.areaPh" placeholder="Footscray" /></label>
+          <label class="f"><span data-i18n="profile.travel">Max travel (minutes)</span><input name="viaje_maximo_minutos" inputmode="numeric" placeholder="60" /></label>
+          <label class="f"><span data-i18n="profile.certs">Certificates</span><input name="certificaciones" data-i18n-placeholder="profile.certsPh" placeholder="RSA, First Aid, White Card…" /></label>
+          <label class="f"><span data-i18n="profile.english">English level</span>
             <select name="nivel_de_ingles">
-              <option value="básico">Básico</option>
-              <option value="intermedio" selected>Intermedio</option>
-              <option value="avanzado">Avanzado</option>
+              <option value="basic" data-i18n="profile.basic">Basic</option>
+              <option value="intermediate" data-i18n="profile.intermediate" selected>Intermediate</option>
+              <option value="advanced" data-i18n="profile.advanced">Advanced</option>
             </select>
           </label>
-          <label class="campo-form campo-ancho">
-            <span>Experiencia</span>
-            <input name="experiencia" placeholder="atención al cliente, 3 años; administración, 1 año" />
-          </label>
-          <label class="campo-form">
-            <span>Salario mínimo</span>
-            <input name="salario_minimo" placeholder="$30/hora" />
-          </label>
-          <label class="campo-form">
-            <span>Viaje máximo (minutos)</span>
-            <input name="viaje_maximo_minutos" inputmode="numeric" placeholder="60" />
-          </label>
+          <label class="f wide"><span data-i18n="profile.experience">Experience</span><input name="experiencia" data-i18n-placeholder="profile.experiencePh" placeholder="customer service, 3 years; admin, 1 year" /></label>
+          <label class="f"><span data-i18n="profile.pay">Minimum pay</span><input name="salario_minimo" placeholder="$30/hour" /></label>
         </div>
-
-        <p class="nota-vevo">
-          ¿No sabes qué visa tienes? Consúltalo gratis en
+        <p class="muted small">
+          <span data-i18n="profile.vevo">Not sure about your visa conditions? Check them for free on</span>
           <a href="https://immi.homeaffairs.gov.au/visas/already-have-a-visa/check-visa-details-and-conditions/check-conditions-online" target="_blank" rel="noopener">VEVO</a>.
         </p>
-
-        <footer class="dialogo-pie">
-          <button class="btn btn-ghost" type="button" id="limpiar-perfil">Borrar datos</button>
-          <button class="btn btn-primary" type="submit">Guardar perfil</button>
+        <footer class="dialog-foot">
+          <button class="btn btn-ghost" type="button" id="clear-profile" data-i18n="profile.clear">Delete my data</button>
+          <button class="btn btn-primary" type="submit" data-i18n="profile.save">Save profile</button>
         </footer>
       </form>
     </dialog>
 
     <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
 
-    <script src="./assets/config.js"></script>
-    <script src="./assets/demo-data.js"></script>
+    <script src="./assets/i18n.js"></script>
     <script src="./assets/app.js"></script>
   </body>
 </html>

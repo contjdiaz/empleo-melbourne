@@ -4,6 +4,20 @@ Busca ofertas de empleo nuevas en Melbourne para una mujer colombiana migrante
 que estudia inglés y busca trabajo estable. Descarta limpieza y prioriza
 jornada completa.
 
+## Versión en la nube (la que usa tu hermana)
+
+| Pieza | Dónde | Qué hace |
+|---|---|---|
+| Agente en Claude Managed Agents | `agents/melbourne-job-finder/` | Sonnet 5.5, tope USD 1,20 por conversación |
+| Skill de búsqueda | `skills/melbourne-job-search/` | SEEK + LinkedIn + Vic Careers en un script |
+| Web en Vercel | `web/` | Chat con tarjetas, EN/ES, búsqueda rápida gratis |
+| IDs creados | `claude-lock.json` | Lo escribe `ant apply` |
+
+Empieza por `agents/melbourne-job-finder/README.md` (la ficha completa) y
+`web/README.md` (cómo desplegar y las variables de Vercel).
+
+## Versión local (Agent SDK, la original)
+
 Hecho con el [Claude Agent SDK](https://code.claude.com/docs/en/agent-sdk).
 
 ## Cómo correrlo
