@@ -75,7 +75,9 @@
       node.placeholder = t(node.dataset.i18nPlaceholder);
     });
     $$(".lang [data-lang]").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.lang === state.lang)));
+    $("#example-text").textContent = t("example.text");
     renderSuggestions();
+    renderFollowups();
     renderQuickChips();
     renderProfileSummary();
     renderSaved();
@@ -346,6 +348,19 @@
     });
   }
 
+  function renderFollowups() {
+    const box = $("#followup-chips");
+    box.innerHTML = "";
+    [1, 2, 3, 4].forEach((n) => {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.className = "chip";
+      b.textContent = t(`followup.${n}`);
+      b.addEventListener("click", () => sendMessage(b.textContent));
+      box.appendChild(b);
+    });
+  }
+
   function autosize() {
     const box = $("#prompt");
     box.style.height = "auto";
@@ -430,6 +445,8 @@
     $("#prompt").disabled = !state.ai;
     $$("#suggestions .chip").forEach((b) => (b.disabled = busy || !state.ai));
     $("#new-chat").hidden = !state.chat || !state.chat.id;
+    const canFollow = Boolean(state.ai && state.chat && state.chat.id && !busy && !state.chat.budgetReached);
+    $("#followups").hidden = !canFollow;
   }
 
   function renderMeter() {
@@ -456,7 +473,6 @@
     c.cost = data.cost_cents || 0;
     c.budget = data.budget_cents || c.budget;
     if (data.cursor) c.cursor = data.cursor;
-    let finished = false;
     for (const ev of data.events || []) {
       if (c.seenIds.has(ev.id)) continue;
       c.seenIds.add(ev.id);
@@ -478,7 +494,9 @@
       } else if (ev.type === "error") {
         addBubble("agent", `<p class="error">${esc(ev.text)}</p>`);
       } else if (ev.type === "idle") {
-        if (restoring || c.sawRunning || c.sawAgent) finished = true;
+        // Remember it for this turn: the Session status can still say "running" in this
+        // response, and the idle event will not come again in the next poll.
+        if (restoring || c.sawRunning || c.sawAgent) c.turnIdle = true;
         if (ev.reason === "budget_reached") {
           c.budgetReached = true;
           if (!restoring) addBubble("agent", `<p class="warn-text">${esc(t("chat.budgetReached"))}</p>`);
@@ -486,7 +504,7 @@
       }
     }
     renderMeter();
-    return finished || data.status === "terminated";
+    return Boolean(c.turnIdle) || data.status === "terminated";
   }
 
   function stopPolling() {
@@ -530,6 +548,7 @@
     const c = state.chat;
     c.sawRunning = false;
     c.sawAgent = false;
+    c.turnIdle = false;
     addBubble("user", markdown(text));
     $("#prompt").value = "";
     autosize();
@@ -606,6 +625,11 @@
       }
     });
     $("#new-chat").addEventListener("click", newChat);
+    $("#use-example").addEventListener("click", () => {
+      $("#prompt").value = t("example.text");
+      autosize();
+      $("#prompt").focus();
+    });
     $("#unlock-form").addEventListener("submit", async (e) => {
       e.preventDefault();
       state.code = $("#access-code").value.trim();

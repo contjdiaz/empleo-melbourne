@@ -9,10 +9,10 @@
     "./agents/melbourne-job-finder/agent.md": {
       "kind": "agent",
       "id": "agent_014bRzh9MwpUJM4C8pQbM1Ga",
-      "version": "4",
-      "hash": "6a19d0ea910b5d5f03bd9344617f357e",
-      "remote_hash": "668fca3d9fca7acd1ae93e6d3aade73c",
-      "stamp": "4"
+      "version": "5",
+      "hash": "4cc21701c3d7c9d7642e2bcdecec8b36",
+      "remote_hash": "b63389479e7fd53cc45e45c78677c2b7",
+      "stamp": "5"
     },
     "./agents/melbourne-job-finder/environment.yaml": {
       "kind": "environment",
@@ -31,8 +31,8 @@
     "./skills/melbourne-job-search": {
       "kind": "skill",
       "id": "skill_01PdyjD6J5WctYHKGWKcEUAn",
-      "version": "skver_01Hq8ELi9WsFCDJSpPzzAox4",
-      "hash": "b1f0e1461d2a478cf0244227b8b2b17e"
+      "version": "skver_01Qfy5Rrho8Y44kL1xhyb9q3",
+      "hash": "177c1f74d1d76e802d60349aafdf7474"
     }
   }
 }

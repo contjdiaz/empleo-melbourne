@@ -80,9 +80,24 @@
 
         <div class="messages" id="messages" aria-live="polite">
           <div class="empty-chat" id="empty-chat">
-            <p class="muted" data-i18n="chat.try">Try one of these:</p>
+            <ol class="guide">
+              <li><b data-i18n="guide.1t">Write what job you want</b> <span data-i18n="guide.1">— like you talk to a friend, in English or Spanish.</span></li>
+              <li><b data-i18n="guide.2t">Press Send and wait</b> <span data-i18n="guide.2">— about 30 seconds. You will see what the assistant is doing.</span></li>
+              <li><b data-i18n="guide.3t">Keep asking</b> <span data-i18n="guide.3">— about a job, the pay, or for more jobs.</span></li>
+            </ol>
+            <div class="example">
+              <p class="example-label" data-i18n="example.label">Example question</p>
+              <p class="example-text" id="example-text"></p>
+              <button class="btn btn-mini" type="button" id="use-example" data-i18n="example.use">Use this example</button>
+            </div>
+            <p class="muted" data-i18n="chat.try">Or tap one of these:</p>
             <div class="suggestions" id="suggestions"></div>
           </div>
+        </div>
+
+        <div class="followups" id="followups" hidden>
+          <p class="muted small" data-i18n="followups.label">You can ask next:</p>
+          <div class="suggestions" id="followup-chips"></div>
         </div>
 
         <form class="composer" id="composer" autocomplete="off">

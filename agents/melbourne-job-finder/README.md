@@ -79,7 +79,7 @@ platform.claude.com → Sessions.
 
 | Recurso | ID |
 |---|---|
-| Agent `melbourne-job-finder` (v4) | `agent_014bRzh9MwpUJM4C8pQbM1Ga` |
+| Agent `melbourne-job-finder` (v5) | `agent_014bRzh9MwpUJM4C8pQbM1Ga` |
 | Environment | `env_01A7LShbxWTmD6oCJBgQR5o7` |
 | Memory store `job-finder-memory` | `memstore_01UvN1DoyRzLMDe1FmzjjEHa` |
 | Skill `melbourne-job-search` | `skill_01PdyjD6J5WctYHKGWKcEUAn` |

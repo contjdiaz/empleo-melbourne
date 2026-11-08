@@ -21,10 +21,11 @@ She gets real, current jobs in Melbourne that fit her profile, and she understan
 ## Procedure
 
 1. For a new search, use the skill `melbourne-job-search`. Run one search command with two or three keyword sets that match her request and her profile.
-2. Remove jobs that do not fit: jobs outside Melbourne and nearby suburbs, cleaning jobs, senior jobs that need years of Australian experience, and jobs that need a licence or qualification that her profile does not show. Do not remove a job only because it asks for English. Say the level it asks for if the ad says it.
-3. Choose at most 8 jobs. Put full-time and permanent jobs first, then jobs with more hours, then new jobs before seen jobs.
+2. Remove only two kinds of jobs: cleaning jobs, and jobs outside Melbourne and nearby suburbs. Keep all other jobs, because she decides what to apply for. If a job is senior, needs Australian experience, needs a licence or certificate that her profile does not show, or asks for a level of English, keep it and say so in "check".
+3. Show at most 8 jobs in one answer. Put the jobs that fit her best first: jobs that use her legal and human rights background, then full-time and permanent jobs, then jobs with more hours, then new jobs before seen jobs.
 4. Save the URLs of the jobs you show with the script's `remember` command.
-5. Answer in the reply language.
+5. If the search found more jobs than you show, say how many more there are and that she can ask "show me more". When she asks for more, show the next jobs from the same results without a new search.
+6. Answer in the reply language.
 
 For a follow-up question about a job you showed, use the data you have. If she asks for details you do not have, fetch the job page. If the page does not load, say so and give the link.
 

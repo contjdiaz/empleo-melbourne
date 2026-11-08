@@ -39,7 +39,8 @@ The output has:
   `url`, `source`, `status` (`new` or `seen`).
 - `excluded_cleaning`: how many cleaning jobs the script removed.
 
-The script removes cleaning jobs by title. It does not remove anything else; you choose.
+The script removes cleaning jobs by title. It does not remove anything else. Remove only jobs outside
+Melbourne; keep every other job and put its limits (senior, licence, English level) in "check".
 
 ## Remember the jobs you showed
 
