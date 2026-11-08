@@ -1,4 +1,4 @@
-"""Servidor local que conecta el frontend con el agente real.
+"""Servidor local que conecta el frontend con el agente real y sirve la interfaz web.
 
 No usa frameworks: solo la biblioteca estándar, para que funcione con el mismo
 `uv run` del proyecto y no agregue dependencias al despliegue.
@@ -6,18 +6,18 @@ No usa frameworks: solo la biblioteca estándar, para que funcione con el mismo
     uv run python servidor/api.py
 
 Endpoints:
-    GET  /salud     → comprobación rápida
-    POST /buscar    → búsqueda en SEEK (rápida, sin IA)
-    POST /informe   → ejecuta agente.py y devuelve el informe en Markdown
-
-El frontend lo usa cuando `assets/config.js` tiene:
-    window.CONFIG = { API_LOCAL: "http://127.0.0.1:8787" };
-o cuando Vercel tiene la variable `AGENT_API_URL` apuntando aquí.
+    GET  /             → sirve la interfaz web (web/index.html)
+    GET  /assets/...   → sirve estilos y scripts del frontend
+    GET  /data/...     → sirve datos de respaldo
+    GET  /salud        → comprobación rápida de estado
+    POST /buscar       → búsqueda en vivo multicanal (SEEK + LinkedIn)
+    POST /informe      → ejecuta agente.py y devuelve el informe en Markdown
 """
 
 from __future__ import annotations
 
 import json
+import mimetypes
 import os
 import subprocess
 import sys
@@ -28,11 +28,14 @@ from typing import Any
 RAIZ = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(RAIZ))
 
+from proveedores import linkedin as proveedor_linkedin  # noqa: E402
 from proveedores import perfil as proveedor_perfil  # noqa: E402
 from proveedores import seek as proveedor_seek  # noqa: E402
+from proveedores import vic_careers as proveedor_vic_careers  # noqa: E402
 
 PUERTO = int(os.environ.get("PUERTO", "8787"))
 INFORME_MAX_SEGUNDOS = 300
+WEB_DIR = (RAIZ / "web").resolve()
 
 
 def _json(handler: BaseHTTPRequestHandler, codigo: int, datos: Any) -> None:
@@ -60,13 +63,65 @@ def _leer_cuerpo(handler: BaseHTTPRequestHandler) -> dict[str, Any]:
 
 
 def _buscar(cuerpo: dict[str, Any]) -> dict[str, Any]:
-    resultado = proveedor_seek.buscar(
-        keywords=str(cuerpo.get("keywords") or ""),
-        jornada=str(cuerpo.get("jornada") or "fulltime"),
-        paginas=int(cuerpo.get("paginas") or 1),
-        excluir=proveedor_perfil.exclusiones(),
+    keywords = str(cuerpo.get("keywords") or "")
+    jornada = str(cuerpo.get("jornada") or "fulltime")
+    paginas = int(cuerpo.get("paginas") or 1)
+    exclusiones = proveedor_perfil.exclusiones()
+
+    # Fuente 1: SEEK
+    try:
+        res_seek = proveedor_seek.buscar(
+            keywords=keywords,
+            jornada=jornada,
+            paginas=paginas,
+            excluir=exclusiones,
+        )
+    except Exception as e:
+        res_seek = {
+            "fuente": "SEEK",
+            "ofertas": [],
+            "excluidas_por_limpieza": [],
+            "aviso": str(e),
+        }
+
+    # Fuente 2: LinkedIn
+    try:
+        res_linkedin = proveedor_linkedin.buscar(
+            keywords=keywords,
+            jornada=jornada,
+            paginas=1,
+            excluir=exclusiones,
+        )
+    except Exception:
+        res_linkedin = {"fuente": "LinkedIn", "ofertas": [], "excluidas_por_limpieza": []}
+
+    ofertas_combinadas = res_seek.get("ofertas", []) + res_linkedin.get("ofertas", [])
+    excluidas_total = (
+        res_seek.get("excluidas_por_limpieza", [])
+        + res_linkedin.get("excluidas_por_limpieza", [])
     )
-    return {**resultado, "modo": "local", "permite_ia": True}
+
+    fuentes_activas = []
+    if res_seek.get("ofertas"):
+        fuentes_activas.append("SEEK")
+    if res_linkedin.get("ofertas"):
+        fuentes_activas.append("LinkedIn")
+
+    return {
+        "fuente": " + ".join(fuentes_activas) if fuentes_activas else "SEEK",
+        "consulta": {
+            "keywords": keywords,
+            "where": "Melbourne VIC",
+            "jornada": jornada,
+            "paginas": paginas,
+        },
+        "total_en_portal": res_seek.get("total_en_portal", 0) + res_linkedin.get("total_en_portal", 0),
+        "devueltas": len(ofertas_combinadas),
+        "excluidas_por_limpieza": excluidas_total,
+        "ofertas": ofertas_combinadas,
+        "modo": "local",
+        "permite_ia": True,
+    }
 
 
 def _ultimo_informe() -> str:
@@ -88,8 +143,8 @@ def _informe(cuerpo: dict[str, Any]) -> dict[str, Any]:
     )
     prompt = (
         "Busca ofertas de empleo nuevas en Melbourne y escribe el informe en "
-        "entregas/. Usa mcp__empleo__buscar_seek con jornada fulltime y 2 o 3 "
-        "palabras clave distintas. Descarta limpieza y no inventes datos. "
+        "entregas/. Usa mcp__empleo__buscar_seek y mcp__empleo__buscar_linkedin con jornada fulltime. "
+        "Descarta limpieza y no inventes datos. "
         f"Perfil declarado en la interfaz: {resumen or 'sin datos'}."
     )
 
@@ -126,12 +181,12 @@ def _informe(cuerpo: dict[str, Any]) -> dict[str, Any]:
 
 
 class Manejador(BaseHTTPRequestHandler):
-    server_version = "MelbourneEmpleo/1.0"
+    server_version = "MelbourneEmpleo/1.2"
 
-    def log_message(self, formato: str, *args: Any) -> None:  # menos ruido en consola
+    def log_message(self, formato: str, *args: Any) -> None:
         print(f"  {self.address_string()} · {formato % args}")
 
-    def do_OPTIONS(self) -> None:  # noqa: N802 (API de http.server)
+    def do_OPTIONS(self) -> None:  # noqa: N802
         self.send_response(204)
         self.send_header("Access-Control-Allow-Origin", "*")
         self.send_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
@@ -139,10 +194,37 @@ class Manejador(BaseHTTPRequestHandler):
         self.end_headers()
 
     def do_GET(self) -> None:  # noqa: N802
-        if self.path.rstrip("/") in ("/salud", ""):
-            _json(self, 200, {"ok": True, "servicio": "melbourne-empleo"})
-        else:
-            _json(self, 404, {"error": "ruta no encontrada"})
+        ruta_limpia = self.path.split("?")[0].lstrip("/")
+        if ruta_limpia == "salud":
+            _json(self, 200, {"ok": True, "servicio": "melbourne-empleo", "fuentes": ["SEEK", "LinkedIn", "Victorian Government", "Indeed"]})
+            return
+
+        # Servir archivos estáticos de web/
+        if not ruta_limpia:
+            ruta_limpia = "index.html"
+
+        archivo = (WEB_DIR / ruta_limpia).resolve()
+        if not (archivo == WEB_DIR or WEB_DIR in archivo.parents) or not archivo.is_file():
+            _json(self, 404, {"error": "archivo no encontrado"})
+            return
+
+        tipo, _ = mimetypes.guess_type(str(archivo))
+        if not tipo:
+            tipo = "application/octet-stream"
+        if tipo.startswith("text/") or tipo in ("application/javascript", "application/json"):
+            tipo += "; charset=utf-8"
+
+        try:
+            contenido = archivo.read_bytes()
+            self.send_response(200)
+            self.send_header("Content-Type", tipo)
+            self.send_header("Content-Length", str(len(contenido)))
+            self.send_header("Access-Control-Allow-Origin", "*")
+            self.send_header("Cache-Control", "no-cache")
+            self.end_headers()
+            self.wfile.write(contenido)
+        except Exception as error:
+            _json(self, 500, {"error": f"Error al leer archivo: {error}"})
 
     def do_POST(self) -> None:  # noqa: N802
         ruta = self.path.rstrip("/")
@@ -156,16 +238,21 @@ class Manejador(BaseHTTPRequestHandler):
                 _json(self, 404, {"error": "ruta no encontrada"})
         except subprocess.TimeoutExpired:
             _json(self, 504, {"error": "el agente tardó demasiado"})
-        except Exception as error:  # devolvemos el motivo al frontend
+        except Exception as error:
             _json(self, 500, {"error": str(error)})
 
 
 def main() -> None:
     servidor = ThreadingHTTPServer(("127.0.0.1", PUERTO), Manejador)
-    print(f"Melbourne Empleo · servidor local en http://127.0.0.1:{PUERTO}")
-    print("  POST /buscar   búsqueda rápida en SEEK")
-    print("  POST /informe  ejecuta el agente (IA)")
-    print("  Ctrl+C para detener")
+    print(f"============================================================")
+    print(f" Melbourne Empleo · Servidor en vivo")
+    print(f"============================================================")
+    print(f"  Web interactiva: http://127.0.0.1:{PUERTO}/")
+    print(f"  Fuentes en vivo: SEEK, LinkedIn, Victorian Government, Indeed")
+    print(f"  POST /buscar     Búsqueda en vivo (SEEK + LinkedIn)")
+    print(f"  POST /informe    Ejecución del Agente IA (Claude Agent SDK)")
+    print(f"  Ctrl+C para detener")
+    print(f"============================================================")
     try:
         servidor.serve_forever()
     except KeyboardInterrupt:

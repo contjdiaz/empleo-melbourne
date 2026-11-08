@@ -7,6 +7,9 @@ node_modules/
 .agent-toolkit/
 *.log
 
+# Adaptadores
+adaptadores/indeed_session.json
+
 # Workspace
 workspace/entregas/*.md
 !workspace/entregas/.gitkeep

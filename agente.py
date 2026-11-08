@@ -38,8 +38,10 @@ from claude_agent_sdk import (
 
 from hooks import vigilar_fuentes
 from proveedores import indeed as proveedor_indeed
+from proveedores import linkedin as proveedor_linkedin
 from proveedores import perfil as proveedor_perfil
 from proveedores import seek as proveedor_seek
+from proveedores import vic_careers as proveedor_vic_careers
 
 
 # ─── Paso 5 · tus funciones ────────────────────────────────────────────────
@@ -180,6 +182,83 @@ async def buscar_indeed(args: dict[str, Any]) -> dict[str, Any]:
 
 
 @tool(
+    "buscar_linkedin",
+    "Busca ofertas reales en LinkedIn Australia y las devuelve ya normalizadas. "
+    "Filtra puestos de limpieza y prioriza vacantes en Melbourne.",
+    {"keywords": str, "where": str, "jornada": str, "paginas": int},
+)
+async def buscar_linkedin(args: dict[str, Any]) -> dict[str, Any]:
+    try:
+        resultado = proveedor_linkedin.buscar(
+            keywords=args.get("keywords", "") or "",
+            where=args.get("where", "") or "Melbourne, Victoria, Australia",
+            jornada=args.get("jornada", "") or "fulltime",
+            paginas=int(args.get("paginas") or 1),
+            excluir=proveedor_perfil.exclusiones(),
+        )
+    except Exception as error:
+        return {
+            "content": [
+                {
+                    "type": "text",
+                    "text": f"LinkedIn falló: {error}. Anótala como no revisada y sigue.",
+                }
+            ]
+        }
+    recorte = {
+        "fuente": resultado["fuente"],
+        "consulta": resultado["consulta"],
+        "total_en_portal": resultado["total_en_portal"],
+        "devueltas": resultado["devueltas"],
+        "excluidas_por_limpieza": resultado["excluidas_por_limpieza"][:5],
+        "ofertas": resultado["ofertas"][:MOSTRAR_POR_BUSQUEDA],
+    }
+    return {
+        "content": [
+            {"type": "text", "text": json.dumps(recorte, ensure_ascii=False, indent=1)}
+        ]
+    }
+
+
+@tool(
+    "buscar_vic_careers",
+    "Busca ofertas de empleo público en el portal oficial del Gobierno de Victoria "
+    "(careers.vic.gov.au). Ofrece vacantes estables y formales en Melbourne.",
+    {"keywords": str, "where": str, "paginas": int},
+)
+async def buscar_vic_careers(args: dict[str, Any]) -> dict[str, Any]:
+    try:
+        resultado = proveedor_vic_careers.buscar(
+            keywords=args.get("keywords", "") or "",
+            where=args.get("where", "") or "Melbourne",
+            paginas=int(args.get("paginas") or 1),
+            excluir=proveedor_perfil.exclusiones(),
+        )
+    except Exception as error:
+        return {
+            "content": [
+                {
+                    "type": "text",
+                    "text": f"Victorian Careers falló: {error}. Anótala como no revisada y sigue.",
+                }
+            ]
+        }
+    recorte = {
+        "fuente": resultado["fuente"],
+        "consulta": resultado["consulta"],
+        "total_en_portal": resultado["total_en_portal"],
+        "devueltas": resultado["devueltas"],
+        "excluidas_por_limpieza": resultado["excluidas_por_limpieza"][:5],
+        "ofertas": resultado["ofertas"][:MOSTRAR_POR_BUSQUEDA],
+    }
+    return {
+        "content": [
+            {"type": "text", "text": json.dumps(recorte, ensure_ascii=False, indent=1)}
+        ]
+    }
+
+
+@tool(
     "leer_perfil",
     "Devuelve la ficha diligenciable de la usuaria y la lista de datos que aún "
     "quedaron en COMPLETAR (visa, horas, certificaciones…). Úsala al inicio para "
@@ -197,11 +276,13 @@ async def leer_perfil(args: dict[str, Any]) -> dict[str, Any]:
 
 empleo = create_sdk_mcp_server(
     name="empleo",
-    version="1.1.0",
+    version="1.2.0",
     tools=[
         ya_visto,
         registrar_oferta,
         buscar_seek,
+        buscar_linkedin,
+        buscar_vic_careers,
         buscar_indeed,
         leer_perfil,
     ],
@@ -229,10 +310,11 @@ Un informe en entregas/novedades-<AAAA-MM-DD>.md con las ofertas nuevas que cump
 <como_trabajas>
 1. Llama a mcp__empleo__leer_perfil. Anota qué campos quedaron en COMPLETAR: esos no se inventan ni se usan para descartar.
 2. Busca en SEEK con mcp__empleo__buscar_seek. Haz 2 o 3 búsquedas con palabras distintas (por ejemplo "customer service", "warehouse", "administration") y jornada "fulltime". Es la fuente más completa y ya descarta limpieza.
-3. Si mcp__empleo__buscar_indeed está disponible, úsala también. Si devuelve instrucciones, no es un fallo: anota Indeed como "no revisada" y sigue.
-4. Usa WebSearch/WebFetch para LinkedIn y los portales oficiales. No inventes URLs.
-5. Descarta lo que no esté en Melbourne o alrededores con transporte razonable. Prioriza jornada completa (35+ h) y contratos permanentes.
-6. Compara títulos y enlaces con datos/visto.json; reporta solo lo nuevo.
+3. Busca en LinkedIn con mcp__empleo__buscar_linkedin para complementar con vacantes corporativas y de entrada.
+4. Consulta el portal público de Victoria con mcp__empleo__buscar_vic_careers para puestos gubernamentales estables.
+5. Si mcp__empleo__buscar_indeed devuelve ofertas, inclúyelas; si no devuelve por protección de sesión, anótala como pendiente de sesión y continúa.
+6. Descarta lo que no esté en Melbourne o alrededores con transporte razonable. Prioriza jornada completa (35+ h) y contratos permanentes.
+7. Compara títulos y enlaces con datos/visto.json; reporta solo lo nuevo.
 7. Verificación: los datos que devuelve buscar_seek ya vienen del propio SEEK y cuentan como verificados. Abre con WebFetch solo los enlaces que lleguen de WebSearch. Si un enlace no carga, marca la oferta como "no verificada" y no la cuentes como hallazgo.
 8. Escribe el informe dentro de entregas/. Registra cada oferta reportada con mcp__empleo__registrar_oferta: no escribas datos/visto.json con la herramienta Write.
 9. Cuando el informe esté escrito, para.

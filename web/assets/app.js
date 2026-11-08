@@ -3,7 +3,8 @@
   "use strict";
 
   const CLAVE_PERFIL = "melbourne-empleo:perfil:v1";
-  const API_LOCAL = ((window.CONFIG && window.CONFIG.API_LOCAL) || "").replace(/\/+$/, "");
+  const ORIGEN_ACTUAL = (window.location && window.location.origin && window.location.origin.startsWith("http")) ? window.location.origin : "";
+  const API_LOCAL = ((window.CONFIG && window.CONFIG.API_LOCAL) || (ORIGEN_ACTUAL.includes("8787") ? ORIGEN_ACTUAL : "")).replace(/\/+$/, "");
   const DEMO = window.DEMO || { ofertas: [], total: 0 };
 
   const CAMPOS = [
@@ -358,6 +359,7 @@
     articulo.innerHTML = `
       <div class="card-top">
         <span class="badge ${claseJornada(oferta.jornada)}">${escapar(etiquetaJornada(oferta.jornada))}</span>
+        <span class="badge" style="background:#eef2ff;color:#3730a3;border:1px solid #c7d2fe;font-size:0.75rem;">${escapar(oferta.fuente || "SEEK")}</span>
         <span class="card-fecha">${escapar(textoPublicada(oferta))}</span>
       </div>
       <h3><a href="${escapar(oferta.enlace)}" target="_blank" rel="noopener noreferrer">${escapar(oferta.titulo)}</a></h3>
