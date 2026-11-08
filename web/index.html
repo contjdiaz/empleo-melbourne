@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Melbourne Empleo · trabajo estable para mi hermana</title>
+    <meta
+      name="description"
+      content="Buscador de empleo en Melbourne: jornada completa, sin limpieza y con los datos que faltan marcados para completar."
+    />
+    <meta name="theme-color" content="#fff8f5" />
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💖</text></svg>" />
+    <link rel="stylesheet" href="./assets/styles.css" />
+  </head>
+  <body>
+    <div class="aura" aria-hidden="true">
+      <span class="blob blob-1"></span>
+      <span class="blob blob-2"></span>
+      <span class="blob blob-3"></span>
+    </div>
+
+    <header class="topbar">
+      <a class="brand" href="#inicio" aria-label="Melbourne Empleo, inicio">
+        <span class="brand-mark" aria-hidden="true">♥</span>
+        <span class="brand-name">Melbourne <b>Empleo</b></span>
+      </a>
+      <nav class="nav" aria-label="Secciones">
+        <a href="#buscar">Buscar</a>
+        <a href="#como">Cómo funciona</a>
+        <button class="btn btn-ghost" id="abrir-perfil" type="button">
+          Mi perfil <span class="punto" id="perfil-punto" hidden></span>
+        </button>
+      </nav>
+    </header>
+
+    <main id="inicio">
+      <section class="hero">
+        <p class="eyebrow"><span class="latido">♥</span> Hecho para una colombiana en Melbourne</p>
+        <h1>
+          Trabajo estable,
+          <em>con las horas que necesitas.</em>
+        </h1>
+        <p class="lead">
+          Busca en SEEK, descarta la limpieza y prioriza la jornada completa.
+          No inventa ofertas, salarios ni visas: si un dato falta, te dice
+          exactamente cuál completar.
+        </p>
+
+        <div class="hero-datos" id="hero-datos">
+          <div class="dato"><span id="dato-visa">Visa por completar</span><small>derecho a trabajar</small></div>
+          <div class="dato"><span id="dato-horas">Horas por definir</span><small>disponibilidad semanal</small></div>
+          <div class="dato"><span id="dato-zona">Melbourne</span><small>y alrededores</small></div>
+        </div>
+      </section>
+
+      <section class="panel" id="buscar">
+        <form class="buscador" id="form-buscar" autocomplete="off">
+          <label class="etiqueta" for="q">¿Qué tipo de trabajo buscas?</label>
+          <div class="fila-busqueda">
+            <div class="campo">
+              <span class="campo-icono" aria-hidden="true">⌕</span>
+              <input
+                id="q"
+                name="q"
+                type="search"
+                placeholder="customer service, warehouse, administración…"
+                aria-describedby="ayuda-q"
+              />
+            </div>
+            <label class="select-wrap">
+              <span class="sr-only">Jornada</span>
+              <select id="jornada" name="jornada">
+                <option value="fulltime">Jornada completa</option>
+                <option value="parttime">Medio tiempo</option>
+                <option value="casual">Casual</option>
+                <option value="contract">Contrato temporal</option>
+                <option value="cualquiera">Cualquiera</option>
+              </select>
+            </label>
+            <button class="btn btn-primary" type="submit" id="btn-buscar">
+              <span>Buscar ofertas</span>
+              <span class="flecha" aria-hidden="true">→</span>
+            </button>
+          </div>
+          <p class="ayuda" id="ayuda-q">
+            Solo portales oficiales. Las ofertas de limpieza se excluyen
+            automáticamente.
+          </p>
+
+          <div class="chips" role="group" aria-label="Búsquedas sugeridas">
+            <button type="button" class="chip" data-q="customer service">customer service</button>
+            <button type="button" class="chip" data-q="warehouse">warehouse</button>
+            <button type="button" class="chip" data-q="administration">administración</button>
+            <button type="button" class="chip" data-q="retail">retail</button>
+            <button type="button" class="chip" data-q="receptionist">recepción</button>
+          </div>
+        </form>
+
+        <div class="aviso" id="aviso-perfil" hidden>
+          <div>
+            <strong>Tu perfil está incompleto.</strong>
+            <span id="aviso-texto">Faltan datos de visa y horas.</span>
+          </div>
+          <button class="btn btn-mini" type="button" data-abrir-perfil>Completar ahora</button>
+        </div>
+
+        <div class="resumen" id="meta" aria-live="polite"></div>
+        <div class="grid" id="ofertas"></div>
+
+        <div class="vacio" id="vacio" hidden>
+          <p class="vacio-emoji" aria-hidden="true">🌱</p>
+          <h3>Sin resultados para esa búsqueda</h3>
+          <p>Prueba con otra palabra o cambia la jornada. También puedes limpiar el campo para ver todo.</p>
+        </div>
+
+        <div class="estado" id="estado" hidden>
+          <span class="spinner" aria-hidden="true"></span>
+          <span id="estado-texto">Buscando ofertas…</span>
+        </div>
+
+        <div class="informe" id="informe" hidden>
+          <div class="informe-cabecera">
+            <h3>Informe del agente</h3>
+            <button class="btn btn-mini" type="button" id="cerrar-informe">Cerrar</button>
+          </div>
+          <div class="informe-cuerpo" id="informe-cuerpo"></div>
+        </div>
+      </section>
+
+      <section class="como" id="como">
+        <h2>Cómo funciona</h2>
+        <div class="pasos">
+          <article class="paso">
+            <span class="paso-num">1</span>
+            <h3>Completa tu perfil</h3>
+            <p>Visa, horas disponibles y certificaciones. Sin esos datos, el agente no descarta nada: solo te avisa.</p>
+          </article>
+          <article class="paso">
+            <span class="paso-num">2</span>
+            <h3>Busca en SEEK</h3>
+            <p>Consulta real al portal, con filtro de jornada completa y exclusión de limpieza aplicada en código.</p>
+          </article>
+          <article class="paso">
+            <span class="paso-num">3</span>
+            <h3>Revisa y postula</h3>
+            <p>Cada tarjeta enlaza a la oferta original. El agente nunca postula, ni envía mensajes, ni crea cuentas.</p>
+          </article>
+        </div>
+      </section>
+    </main>
+
+    <footer class="pie">
+      <div class="amor" aria-label="Dedicatoria">
+        <p class="corazones" aria-hidden="true">💖 💕 💗 ❤️ 💓 💞 💘 💝</p>
+        <p class="amor-texto">
+          Con mucho amor de <strong>Jimy Díaz</strong> para su hermana
+        </p>
+        <p class="corazones corazones-2" aria-hidden="true">💗 💖 💞 💓 ❤️ 💕 💝 💘</p>
+      </div>
+      <div class="pie-meta">
+        <span>Melbourne Empleo · 2026</span>
+        <span class="punto-sep" aria-hidden="true">·</span>
+        <span>Datos de SEEK Australia</span>
+        <span class="punto-sep" aria-hidden="true">·</span>
+        <span id="pie-modo">Modo demostración</span>
+      </div>
+    </footer>
+
+    <dialog class="dialogo" id="dialogo-perfil" aria-labelledby="titulo-perfil">
+      <form method="dialog" class="dialogo-form" id="form-perfil">
+        <header class="dialogo-cabecera">
+          <div>
+            <h2 id="titulo-perfil">Mi perfil</h2>
+            <p>Se guarda solo en este navegador. Nada se envía a ningún servidor.</p>
+          </div>
+          <button class="cerrar" type="button" id="cerrar-perfil" aria-label="Cerrar">×</button>
+        </header>
+
+        <div class="campos">
+          <label class="campo-form">
+            <span>Visa</span>
+            <input name="visa" placeholder="Student visa (subclass 500)" />
+          </label>
+          <label class="campo-form">
+            <span>Derecho a trabajar</span>
+            <input name="derecho_a_trabajar" placeholder="24 h/semana durante el curso" />
+          </label>
+          <label class="campo-form">
+            <span>Horas disponibles por semana</span>
+            <input name="horas_disponibles" inputmode="numeric" placeholder="38" />
+          </label>
+          <label class="campo-form">
+            <span>Disponibilidad</span>
+            <input name="disponibilidad" placeholder="lunes a viernes, mañana y tarde" />
+          </label>
+          <label class="campo-form">
+            <span>Certificaciones</span>
+            <input name="certificaciones" placeholder="RSA, First Aid, White Card…" />
+          </label>
+          <label class="campo-form">
+            <span>Nivel de inglés</span>
+            <select name="nivel_de_ingles">
+              <option value="básico">Básico</option>
+              <option value="intermedio" selected>Intermedio</option>
+              <option value="avanzado">Avanzado</option>
+            </select>
+          </label>
+          <label class="campo-form campo-ancho">
+            <span>Experiencia</span>
+            <input name="experiencia" placeholder="atención al cliente, 3 años; administración, 1 año" />
+          </label>
+          <label class="campo-form">
+            <span>Salario mínimo</span>
+            <input name="salario_minimo" placeholder="$30/hora" />
+          </label>
+          <label class="campo-form">
+            <span>Viaje máximo (minutos)</span>
+            <input name="viaje_maximo_minutos" inputmode="numeric" placeholder="60" />
+          </label>
+        </div>
+
+        <p class="nota-vevo">
+          ¿No sabes qué visa tienes? Consúltalo gratis en
+          <a href="https://immi.homeaffairs.gov.au/visas/already-have-a-visa/check-visa-details-and-conditions/check-conditions-online" target="_blank" rel="noopener">VEVO</a>.
+        </p>
+
+        <footer class="dialogo-pie">
+          <button class="btn btn-ghost" type="button" id="limpiar-perfil">Borrar datos</button>
+          <button class="btn btn-primary" type="submit">Guardar perfil</button>
+        </footer>
+      </form>
+    </dialog>
+
+    <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+
+    <script src="./assets/config.js"></script>
+    <script src="./assets/demo-data.js"></script>
+    <script src="./assets/app.js"></script>
+  </body>
+</html>

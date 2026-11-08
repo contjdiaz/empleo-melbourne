@@ -1,0 +1,14 @@
+.env
+.env.*
+!.env.example
+.venv/
+__pycache__/
+node_modules/
+.agent-toolkit/
+*.log
+
+# Workspace
+workspace/entregas/*.md
+!workspace/entregas/.gitkeep
+workspace/datos/visto.json
+

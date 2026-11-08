@@ -1,0 +1,15 @@
+{
+  "_ayuda": "Listas en minúsculas. Se comparan contra el TÍTULO de la oferta. Agrega palabras para excluir más empleos; no borres las de limpieza si no quieres verlas.",
+  "excluir_titulos": [
+    "cleaner",
+    "cleaning",
+    "housekeep",
+    "janitor",
+    "limpieza",
+    "domestic clean",
+    "commercial clean",
+    "window clean",
+    "laundry attendant"
+  ],
+  "excluir_empresas": []
+}
