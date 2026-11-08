@@ -1,0 +1,23 @@
+{
+ "agent": "melbourne-job-finder",
+ "title": "test melbourne-job-finder: lawyer human rights profile",
+ "budget_usd": 1.2,
+ "vault_ids": [],
+ "resources": [
+  {
+   "path": "./agents/melbourne-job-finder/memory_store-memoria.yaml",
+   "access": "read_write"
+  }
+ ],
+ "events": [
+  {
+   "type": "user.message",
+   "content": [
+    {
+     "type": "text",
+     "text": "Reply language: Spanish\n\nRequest: Busco trabajo de tiempo completo donde pueda usar mi experiencia en derechos humanos.\n\nProfile (from the profile form):\n- visa: not set\n- right to work: not set\n- hours available per week: 38\n- availability: Monday to Friday\n- certifications: not set\n- English level: intermediate\n- experience: lawyer in Colombia, human rights, 5 years\n- minimum pay: not set\n- suburb or area: Footscray\n- max travel (minutes): 60"
+    }
+   ]
+  }
+ ]
+}

@@ -35,7 +35,7 @@ function step(event) {
     const command = String(input.command || "");
     if (command.includes("search.py search")) {
       const keywords = [...command.matchAll(/-k\s+"([^"]+)"/g)].map((m) => m[1]);
-      const sources = (command.match(/--sources\s+([a-z,]+)/) || [])[1] || "seek,linkedin,vic";
+      const sources = (command.match(/--sources\s+([a-z,]+)/) || [])[1] || "seek,linkedin,vic,ethical";
       return { kind: "search", keywords, sources: sources.split(",") };
     }
     if (command.includes("search.py remember")) return { kind: "remember" };

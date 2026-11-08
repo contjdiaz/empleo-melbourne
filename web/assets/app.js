@@ -629,7 +629,7 @@
   function renderQuickChips() {
     const box = $("#quick-chips");
     box.innerHTML = "";
-    ["customer service", "admin assistant", "warehouse", "retail", "receptionist", "barista"].forEach((q) => {
+    ["paralegal", "legal assistant", "caseworker", "human rights", "policy officer", "customer service"].forEach((q) => {
       const b = document.createElement("button");
       b.type = "button";
       b.className = "chip";

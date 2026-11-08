@@ -10,4 +10,5 @@ config:
       - www.seek.com.au                # SEEK job pages (details)
       - www.linkedin.com               # LinkedIn guest job search and job pages
       - www.careers.vic.gov.au         # Victorian Government Careers (careers.vic.gov.au redirects here)
+      - www.ethicaljobs.com.au         # Ethical Jobs: not-for-profit, human rights, community jobs
       - www.fairwork.gov.au            # minimum pay guides

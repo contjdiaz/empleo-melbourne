@@ -1,6 +1,6 @@
 ---
 name: melbourne-job-search
-description: Search real, current job ads in Melbourne on SEEK, LinkedIn and Victorian Government Careers with one script, remove cleaning jobs, and mark jobs already shown as "seen". Use it for every new job search and whenever the user asks for more or different jobs.
+description: Search real, current job ads in Melbourne on SEEK, LinkedIn, Victorian Government Careers and Ethical Jobs (not-for-profit, human rights, community) with one script, remove cleaning jobs, and mark jobs already shown as "seen". Use it for every new job search and whenever the user asks for more or different jobs.
 ---
 
 # Melbourne job search
@@ -20,11 +20,14 @@ python3 <this skill folder>/scripts/search.py search \
 ```
 
 - `-k`: one keyword set per flag. Use two or three sets in English that match the request and the
-  profile (experience, certifications). Use job titles employers write, for example
-  "warehouse assistant", "customer service officer", "admin assistant", "retail assistant",
-  "receptionist", "barista", "aged care", "kitchen hand".
+  profile (experience, certifications). Use job titles employers write. For legal and human rights
+  work, for example: "paralegal", "legal assistant", "caseworker", "migrant support",
+  "refugee support", "human rights", "policy officer", "advocacy", "community legal",
+  "compliance officer", "bilingual Spanish". For entry-level work: "customer service officer",
+  "admin assistant", "receptionist", "retail assistant", "warehouse assistant".
 - `--type`: `fulltime` (default), `parttime`, `contract`, `casual`, or `any`.
-- `--sources`: default `seek,linkedin,vic`. Use `--sources vic` for government jobs only.
+- `--sources`: default `seek,linkedin,vic,ethical`. Use `--sources vic` for government jobs only,
+  `--sources ethical` for not-for-profit and human rights jobs only.
 - `--seen`: the `seen.json` path in the memory store mount (for example
   `/mnt/memory/job-finder-memory/seen.json`). If no memory store is mounted, leave the flag out.
 - `--limit`: default 40.
@@ -53,7 +56,8 @@ The file keeps only URLs and dates, never profile data. It keeps the newest 1,00
 
 The search gives a short summary only. If the user asks about one job (requirements, hours,
 how to apply), fetch the job URL with the web fetch tool. SEEK pages are at `www.seek.com.au`,
-LinkedIn pages at `www.linkedin.com`, government jobs at `www.careers.vic.gov.au`.
+LinkedIn pages at `www.linkedin.com`, government jobs at `www.careers.vic.gov.au`, not-for-profit
+jobs at `www.ethicaljobs.com.au`.
 If a page does not load, say so and give the link.
 
 ## Pay rates
@@ -66,4 +70,6 @@ award rate depends on the award and the classification, and give the link.
 - LinkedIn's list does not show the work type. The script writes `fulltime (search filter)`:
   the job matched the filter, but the ad can say otherwise.
 - Victorian Government Careers does not show the location or the date in its list.
+- Ethical Jobs shows the closing date ("closes YYYY-MM-DD") but not the work type or the salary.
+  Its location filter is loose: remove jobs outside Melbourne.
 - Indeed blocks automated requests. Do not try it.

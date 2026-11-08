@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Search real job ads in Melbourne: SEEK, LinkedIn (guest) and Victorian Government Careers.
+"""Search real job ads in Melbourne: SEEK, LinkedIn (guest), Victorian Government Careers and Ethical Jobs.
 
 Standard library only, so it runs in the Managed Agents sandbox with no install.
 
@@ -147,7 +147,7 @@ def linkedin(keywords: str, work_type: str, where: str) -> list[dict[str, Any]]:
 # ── Victorian Government Careers ───────────────────────────────────────
 
 def vic(keywords: str, work_type: str, where: str) -> list[dict[str, Any]]:
-    page = _get("https://www.careers.vic.gov.au/jobs?" + urllib.parse.urlencode({"keyword": keywords}),
+    page = _get("https://www.careers.vic.gov.au/jobs?" + urllib.parse.urlencode({"keywords": keywords}),
                 "https://www.careers.vic.gov.au/", "text/html,application/xhtml+xml,*/*;q=0.8")
     blocks = re.findall(
         r'<div class="job-searchResult-header">(.+?)(?=<div class="job-searchResult-header"|</rpl-content>|$)',
@@ -173,7 +173,43 @@ def vic(keywords: str, work_type: str, where: str) -> list[dict[str, Any]]:
     return jobs
 
 
-SOURCES = {"seek": seek, "linkedin": linkedin, "vic": vic}
+# ── Ethical Jobs (not-for-profit, human rights, community, legal aid) ──
+
+NEXT_CHUNK = re.compile(r'self\.__next_f\.push\(\[1,"((?:[^"\\]|\\.)*)"\]\)')
+
+
+def ethical(keywords: str, work_type: str, where: str) -> list[dict[str, Any]]:
+    page = _get("https://www.ethicaljobs.com.au/jobs?"
+                + urllib.parse.urlencode({"keywords": keywords, "location": "melbourne"}),
+                "https://www.ethicaljobs.com.au/", "text/html,application/xhtml+xml,*/*;q=0.8")
+    # The page embeds its data as JavaScript string chunks; join them, then read the "jobs" array.
+    payload = "".join(json.loads(f'"{chunk}"') for chunk in NEXT_CHUNK.findall(page))
+    start = payload.find('"jobs":[')
+    if start < 0:
+        raise RuntimeError("no job list in the page (the site layout may have changed)")
+    items, _ = json.JSONDecoder().raw_decode(payload, start + len('"jobs":'))
+    jobs = []
+    for j in items:
+        slug = str(j.get("slug") or "")
+        if not slug or not j.get("title"):
+            continue
+        places = [", ".join(x for x in (p.get("locality"), p.get("name")) if x) for p in j.get("locations") or []]
+        closes = str(j.get("expiresAt") or "")[:10]
+        jobs.append({
+            "title": _clean(j.get("title")),
+            "company": _clean(j.get("organisationName")) or NS,
+            "location": "; ".join(p for p in places if p) or NS,
+            "work_type": NS,
+            "salary": NS,
+            "posted": f"closes {closes}" if closes and not j.get("isExpirationHidden") else NS,
+            "summary": _clean(j.get("summary"))[:SUMMARY_CHARS],
+            "url": f"https://www.ethicaljobs.com.au/members/{slug}",
+            "source": "Ethical Jobs",
+        })
+    return jobs
+
+
+SOURCES = {"seek": seek, "linkedin": linkedin, "vic": vic, "ethical": ethical}
 
 
 # ── seen list (memory store) ───────────────────────────────────────────
@@ -269,7 +305,7 @@ def main() -> int:
     s.add_argument("-k", "--keywords", action="append", default=[], help="keyword set; repeat for more")
     s.add_argument("--type", default="fulltime", choices=["fulltime", "parttime", "contract", "casual", "any"])
     s.add_argument("--where", default="Melbourne VIC", help="SEEK location text (LinkedIn uses Melbourne)")
-    s.add_argument("--sources", default="seek,linkedin,vic", help="comma list: seek,linkedin,vic")
+    s.add_argument("--sources", default="seek,linkedin,vic,ethical", help="comma list: seek,linkedin,vic,ethical")
     s.add_argument("--seen", help="path of seen.json in the memory store")
     s.add_argument("--limit", type=int, default=40, help="max jobs in the output")
 

@@ -9,17 +9,17 @@
     "./agents/melbourne-job-finder/agent.md": {
       "kind": "agent",
       "id": "agent_014bRzh9MwpUJM4C8pQbM1Ga",
-      "version": "3",
-      "hash": "dd996cb30883e5e86d6ea139231c06a1",
-      "remote_hash": "b74bab3f6ff560b6023df5f01c36ab57",
-      "stamp": "3"
+      "version": "4",
+      "hash": "6a19d0ea910b5d5f03bd9344617f357e",
+      "remote_hash": "668fca3d9fca7acd1ae93e6d3aade73c",
+      "stamp": "4"
     },
     "./agents/melbourne-job-finder/environment.yaml": {
       "kind": "environment",
       "id": "env_01A7LShbxWTmD6oCJBgQR5o7",
-      "hash": "1f8378b7f18d8b01ee45067f3ca8e2a4",
-      "remote_hash": "46c4aee81eb3783ae1de0d77803bbcef",
-      "stamp": "2026-11-08T03:01:14.555414Z"
+      "hash": "6b00710e4ad87901444063e1ceb2ffc1",
+      "remote_hash": "e2d48f0de7efcb96d3953c9ebb558fc2",
+      "stamp": "2026-11-08T03:41:05.089452Z"
     },
     "./agents/melbourne-job-finder/memory_store-memoria.yaml": {
       "kind": "memory_store",
@@ -31,8 +31,8 @@
     "./skills/melbourne-job-search": {
       "kind": "skill",
       "id": "skill_01PdyjD6J5WctYHKGWKcEUAn",
-      "version": "skver_01NxpVu6zB7fe1z1fPTyQKeE",
-      "hash": "3425ad15c9d5ce76b1dc47776d0d0f26"
+      "version": "skver_01Hq8ELi9WsFCDJSpPzzAox4",
+      "hash": "b1f0e1461d2a478cf0244227b8b2b17e"
     }
   }
 }
